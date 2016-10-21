@@ -8,7 +8,7 @@ import numpy as np
 r = 20
 b = 24
 
-n = 10000 # num shingles
+n = 8200 # num shingles
 m = 10 # num buckets for each band
 # do these primes need to be random?
 p1 = 10007 # p1 > n.
@@ -53,7 +53,7 @@ def mapper(key, value):
     # key: None
     # value: one line of input file
     tokens = value.split()
-    name = tokens[0]
+    name = int(tokens[0].split("_")[1])
     shingles = [int(i) for i in tokens[1:]]
     
     and_hash = hash_doc(shingles)
@@ -63,31 +63,28 @@ def mapper(key, value):
     #print("[map] and: {}".format(and_hash))
     #print("[map] or: {}".format(or_hash))
     
+    value = (name, set(shingles))
     global m
     for band, or_bucket in enumerate(or_hash):
         yield band*m + or_bucket, value
 
 def reducer(key, values):
+    check_similarity = True
     # key: key from mapper used to aggregate
     # values: list of all value for that key
     #print("[reduce] {}: {}".format(key, values))
     #print("[reduce] {}. checking {} documents via pairwise comparisons".format(key, len(values)))
-    videos = {}
-    for value in values:
-        tokens = value.split()
-        name = int(tokens[0].split("_")[1])
-        shingles = [int(i) for i in tokens[1:]]
-        videos[name] = shingles
-    for i in videos:
-        s1 = set(videos[i])
-        for j in videos:
+    for (i, s1) in values:
+        for (j, s2) in values:
             if i >= j:
                 continue
-            s2 = set(videos[j])
-            intersection = len(s1.intersection(s2))
-            union = len(s1.union(s2))
-            similarity = float(intersection)/union
-            #print("similarity of ({},{}): {}/{} = {}".format(i, j, intersection, union, similarity))
-            if similarity >= 0.85:
+            if check_similarity:
+                intersection = len(s1.intersection(s2))
+                union = len(s1.union(s2))
+                similarity = float(intersection)/union
+                #print("similarity of ({},{}): {}/{} = {}".format(i, j, intersection, union, similarity))
+                if similarity >= 0.85:
+                    yield i, j
+            else:
                 yield i, j
         

@@ -9,10 +9,9 @@ r = 19
 b = 26
 
 n = 8192 # num shingles
-m = 1007 # num buckets for each band
 # do these primes need to be random? I suspect they just need to be really big
 p1 = 1000000007 # p1 > n.
-p2 = 1000000007 # p2 > m
+p2 = 1000000007 # p2
 shingle_hashes = None
 signature_hashes = None
 
@@ -36,13 +35,13 @@ def min_hash(shingles):
     return result
 
 def hash_bands(signature):
-    global r, b, p2, m, signature_hashes
+    global r, b, p2, signature_hashes
     result = []
     for i in range(b):
         h = 0
         for j in range(i*r, (i+1)*r):
-            h += ((signature[j]*signature_hashes[j,0] + signature_hashes[j,1]) % p2) % m
-        result.append(h % m)
+            h += (signature[j]*signature_hashes[j,0] + signature_hashes[j,1]) % p2
+        result.append(h % p2)
     return result
     
 def mapper(key, value):
@@ -56,9 +55,9 @@ def mapper(key, value):
     or_hash = hash_bands(and_hash)
     
     value = (name, set(shingles))
-    global m
+    global p2
     for band, or_bucket in enumerate(or_hash):
-        yield band*m + or_bucket, value
+        yield band*p2 + or_bucket, value
 
 def reducer(key, values):
     check_similarity = True

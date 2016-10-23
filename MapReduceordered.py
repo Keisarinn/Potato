@@ -44,7 +44,7 @@ def reducer(key, values):
             similarity = float(intersection)/union
             #print("similarity of ({},{}): {}/{} = {}".format(i, j, intersection, union, similarity))
             if similarity >= 0.85:
-                yield key, i
+                yield int(key), i
         
 
 def hashfunction1024(value,size):

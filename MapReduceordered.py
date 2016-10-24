@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Oct 23 17:49:00 2016
-
 @author: Siggi
 """
 import numpy as np
@@ -28,24 +24,20 @@ def reducer(key, values):
     # values: list of all value for that key
     #print("[reduce] {}: {}".format(key, values))
     #print("[reduce] {}. checking {} documents via pairwise comparisons".format(key, len(values)))
-    videos = {}
+    
+    index = [i for i,x in enumerate(values) if int(x[0]) == int(key)]
+    #print(index)
+    val = (values[index[0]])[1:]
     for value in values:
-        print(value)
-        #tokens = value.split()
-        name = int(value[0])
-        #print(int(tokens[1]))
-        videos[name] = value[1:]
-    s1 = set(videos[int(key)])
-    for i in videos:
-        if int(key) != i:
-            s2 = set(videos[i])
-            intersection = len(s1.intersection(s2))
-            union = len(s1.union(s2))
-            similarity = float(intersection)/union
-            #print("similarity of ({},{}): {}/{} = {}".format(i, j, intersection, union, similarity))
-            if similarity >= 0.85:
-                yield int(key), i
-        
+        if int(value[0]) != int(key):
+            #print(np.shape(value[1:]))
+            intersection = sum(1 for i, j in zip(value[1:], val) if i == j)
+            print(intersection)
+            jacc = intersection/(1024)    
+            print(jacc)
+            if jacc > 0.85:
+               yield int(key), int(value[0])
+
 
 def hashfunction1024(value,size):
     sign = np.zeros([size], dtype='i4')
@@ -57,7 +49,7 @@ def hashfunction1024(value,size):
 
 def randomized(n,size):
     array = np.zeros([n,size], dtype='i4')
-    np.random.seed(500)
+    np.random.seed(20)
     for i in range(size):
         array[:,i] = np.random.permutation(n)
     return array

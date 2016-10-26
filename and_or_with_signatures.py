@@ -82,6 +82,7 @@ def mapper(key, value):
 def reducer(key, values):
     global check_similarity
     global check_signitures
+    global r, b
     #print(np.shape(values))
     # key: key from mapper used to aggregate
     # values: list of all value for that key

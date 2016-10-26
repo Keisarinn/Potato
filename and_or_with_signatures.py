@@ -108,7 +108,7 @@ def reducer(key, values):
                 intersection = sum(1 for i, j in zip(s1, s2) if i == j)
                 jacc = float(intersection)/(r*b)    
                 if jacc > 0.85:
-               yield i, j
+                    yield i, j
     else:
         for i in values:
             for j in values:

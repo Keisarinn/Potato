@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Oct 25 17:32:29 2016
-
-@author: Daniel Keyes, Siggi
-"""
-
 import numpy as np
 
 
@@ -26,8 +19,8 @@ else:
     # internally compute r hashes)
     # Does that count as 1024 >= r*b + b? 1024 >= 2*r*b? 1024 >= 2*r*b + b? not sure
     # This is an approximate solution to 2*r*b = 1024 and (1/b)^(1/r) = 0.85 according to wolfram:
-    r = 20
-    b = 51
+    r = 8
+    b = 128
 
     # do these primes need to be random? I suspect they just need to be really big
     p1 = 1000000007 # p1 > n.
@@ -75,6 +68,7 @@ def mapper(key, value):
     or_hash = hash_bands(and_hash)
     
     global check_similarity
+    global check_signitures
     if check_similarity:
         value = (name, set(shingles))
     elif check_signitures:
@@ -88,6 +82,7 @@ def mapper(key, value):
 def reducer(key, values):
     global check_similarity
     global check_signitures
+    #print(np.shape(values))
     # key: key from mapper used to aggregate
     # values: list of all value for that key
     if check_similarity:
